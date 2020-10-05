@@ -37,6 +37,24 @@ static int cmd_q(char *args) {
 }
 
 static int cmd_si(char *args){
+	int N=0;
+	if(args==NULL)
+	{
+		N=1;
+	}
+	else
+	{
+		sscanf(args,"%d",&N);
+	}
+	
+	if(N>=1)
+	{
+		cpu_exec(N);
+	}
+	else
+	{
+		printf("error:N < 1\n");
+	}
 	return 0;
 }
 
@@ -52,7 +70,7 @@ static struct {
 	{ "q", "Exit NEMU", cmd_q },
 
 	/* TODO: Add more commands */
-	{ "si [N]","Pause after N steps",cmd_si},
+	{ "si","Pause after N steps, N is 1 when not set",cmd_si},
 
 };
 
