@@ -36,6 +36,10 @@ static int cmd_q(char *args) {
 	return -1;
 }
 
+static int cmd_si(char *args){
+	return 0;
+}
+
 static int cmd_help(char *args);
 
 static struct {
@@ -48,6 +52,7 @@ static struct {
 	{ "q", "Exit NEMU", cmd_q },
 
 	/* TODO: Add more commands */
+	{ "si [N]","Pause after N steps",cmd_si},
 
 };
 
