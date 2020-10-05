@@ -45,11 +45,15 @@ static int cmd_si(char *args){
 	else
 	{
 		sscanf(args,"%d",&N);
-		printf("%d\n",N);
+	//	printf("%d\n",N);    //test N
 	}
 	
 	if(N>=1)
 	{
+		if(N>=10)
+		{
+			printf("N > 9, program will run %d steps but will not print any information\n",N);
+		}	
 		cpu_exec(N);
 	}
 	else
