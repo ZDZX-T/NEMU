@@ -7,10 +7,11 @@
 #include <regex.h>
 
 enum {
-	NOTYPE = 256, EQ
-
+	NOTYPE = 256, EQ,
+	
 	/* TODO: Add more token types */
-
+	NUMBER,
+	HEX,
 };
 
 static struct rule {
@@ -24,7 +25,14 @@ static struct rule {
 
 	{" +",	NOTYPE},				// spaces
 	{"\\+", '+'},					// plus
-	{"==", EQ}						// equal
+	{"-",'-'},//	-
+	{"\\*",'*'},//	*
+	{"/",'/'},//	/
+	{"==", EQ},						// equal
+	{"\\b[0-9]+\\b",NUMBER},   //number, 123
+	{"\\b0[xX][0-9a-fA-F]+\\b",HEX},//number, 0xff
+	{"\\(",'('},// (
+	{"\\)",')'},// )
 };
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]) )
@@ -39,7 +47,7 @@ void init_regex() {
 	char error_msg[128];
 	int ret;
 
-	for(i = 0; i < NR_REGEX; i ++) {
+	for(i = 0; i < NR_REGEX; i ++) {//NR_REGEX: number of rules
 		ret = regcomp(&re[i], rules[i].regex, REG_EXTENDED);
 		if(ret != 0) {
 			regerror(ret, &re[i], error_msg, 128);
@@ -65,7 +73,7 @@ static bool make_token(char *e) {
 
 	while(e[position] != '\0') {
 		/* Try all rules one by one. */
-		for(i = 0; i < NR_REGEX; i ++) {
+		for(i = 0; i < NR_REGEX; i ++) {//NR_REGEX: number of rules
 			if(regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
 				char *substr_start = e + position;
 				int substr_len = pmatch.rm_eo;
