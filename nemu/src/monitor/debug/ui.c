@@ -103,8 +103,8 @@ static int cmd_x(char *args){
 				printf("\n");
 			printf("0x%08x : \t",targetMemory);
 		}
-		printf("0x%08x\t",swaddr_read(targetMemory,4));
-		targetMemory+=4;
+		printf("0x%08x\t",swaddr_read(targetMemory,1));
+		targetMemory+=1;
 	}
 	printf("\n");
 	return 0;
