@@ -84,7 +84,7 @@ static int cmd_info(char *args){
 
 static int cmd_x(char *args){
 	int N;
-	int i;
+	int i,j;
 	swaddr_t targetMemory;
 	char *cmd=strtok(args," ");
 	sscanf(cmd,"%d",&N);
@@ -103,8 +103,12 @@ static int cmd_x(char *args){
 				printf("\n");
 			printf("0x%08x : \t",targetMemory);
 		}
-		printf("0x%08x\t",swaddr_read(targetMemory,1));
-		targetMemory+=1;
+		for(j=0;j<4;j++)
+		{
+			printf("%02x ",swaddr_read(targetMemory,1));
+			targetMemory+=1;
+		}
+		printf("\t");
 	}
 	printf("\n");
 	return 0;
