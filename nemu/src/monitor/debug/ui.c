@@ -66,7 +66,10 @@ static int cmd_si(char *args){
 static int cmd_info(char *args){
 	if(args[0]=='r')
 	{
-		printf("eax 0x%08x",cpu.eax);
+		int i;
+		for (i=0;i<8;i++)
+			printf("%s : 0x%08x\n",regsl[i],reg_l(i));
+		printf("eip : 0x%08x\n",cpu.eip);
 	}
 	else if(args[0]=='w')
 	{
