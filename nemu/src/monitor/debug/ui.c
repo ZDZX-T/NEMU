@@ -63,6 +63,22 @@ static int cmd_si(char *args){
 	return 0;
 }
 
+static int cmd_info(char *args){
+	if(args[0]=='r')
+	{
+		printf("eax 0x%08x",cpu.eax);
+	}
+	else if(args[0]=='w')
+	{
+
+	}
+	else
+	{
+		printf("Unknow command.\n");
+	}
+	return 0;
+}
+
 static int cmd_help(char *args);
 
 static struct {
@@ -76,7 +92,7 @@ static struct {
 
 	/* TODO: Add more commands */
 	{ "si","Pause after N steps, N is 1 when not set",cmd_si},
-
+	{"info","Print the status of the program, r for register, w for watchpoint",cmd_info},
 };
 
 #define NR_CMD (sizeof(cmd_table) / sizeof(cmd_table[0]))
