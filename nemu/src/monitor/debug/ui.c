@@ -71,7 +71,7 @@ static int cmd_info(char *args){
 			printf("%s : 0x%08x\n",regsl[i],reg_l(i));
 		printf("eip : 0x%08x\n",cpu.eip);
 	}
-	else if(args[0]=='w')
+	else if(args[0]=='w')//didn't finish
 	{
 
 	}
@@ -81,6 +81,31 @@ static int cmd_info(char *args){
 	}
 	return 0;
 }
+
+static int cmd_x(char *args){
+	int N;
+	int i;
+	swaddr_t targetMemory;
+	char *cmd=strtok(args," ");
+	sscanf(cmd,"%d",&N);
+	args=cmd+strlen(cmd)+1;
+	targetMemory=atoi(args);
+	if(targetMemory==0)
+	{
+		printf("bad address\n");
+		return 0;
+	}
+	for(i=0;i<N;i++)
+	{
+		if(i%2 == 0 && i!=0)
+			printf("\n0x%08x : ",targetMemory);
+		printf("0x%08x",swaddr_read(targetMemory,4));
+		targetMemory+=4;
+	}
+	printf("\n");
+	return 0;
+}
+
 
 static int cmd_help(char *args);
 
@@ -96,6 +121,7 @@ static struct {
 	/* TODO: Add more commands */
 	{ "si","Pause after N steps, N is 1 when not set",cmd_si},
 	{"info","Print the status of the program, r for register, w for watchpoint",cmd_info},
+	{"x","Scan memory",cmd_x},
 };
 
 #define NR_CMD (sizeof(cmd_table) / sizeof(cmd_table[0]))
