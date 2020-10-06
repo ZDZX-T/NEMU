@@ -98,7 +98,11 @@ static int cmd_x(char *args){
 	for(i=0;i<N;i++)
 	{
 		if(i%2 == 0)
-			printf("\n0x%08x : \t",targetMemory);
+		{
+			if(i)//print enter if it is not the first line
+				printf("\n");
+			printf("0x%08x : \t",targetMemory);
+		}
 		printf("0x%08x\t",swaddr_read(targetMemory,4));
 		targetMemory+=4;
 	}
