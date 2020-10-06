@@ -89,7 +89,7 @@ static int cmd_x(char *args){
 	char *cmd=strtok(args," ");
 	sscanf(cmd,"%d",&N);
 	args=cmd+strlen(cmd)+1;
-	targetMemory=atoi(args);
+	sscanf(args,"%x",&targetMemory);
 	if(targetMemory==0)
 	{
 		printf("bad address\n");
@@ -97,9 +97,9 @@ static int cmd_x(char *args){
 	}
 	for(i=0;i<N;i++)
 	{
-		if(i%2 == 0 && i!=0)
-			printf("\n0x%08x : ",targetMemory);
-		printf("0x%08x",swaddr_read(targetMemory,4));
+		if(i%2 == 0)
+			printf("\n0x%08x : \t",targetMemory);
+		printf("0x%08x\t",swaddr_read(targetMemory,4));
 		targetMemory+=4;
 	}
 	printf("\n");
