@@ -190,6 +190,7 @@ uint32_t eval(int p,int q){
 			}
 			for(i=0;i<8;i++)
 			{
+				printf("%s\t",regsl[i]);
 				if(strcmp(tokens[p].str,regsl[i])==0)
 					num=reg_l(i);
 			}
