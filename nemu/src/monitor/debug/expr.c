@@ -210,10 +210,10 @@ uint32_t eval(int p,int q){
 	else
 	{
 		int op=dominant_operator(p,q);
-		printf("op:%d\t",op);
+		//printf("op:%d\t",op);
 		if(tokens[op].type==POINTER || tokens[op].type==NEGATIVE ||tokens[op].type=='!')
 		{
-			uint32_t val=eval(p+1,p+1);
+			uint32_t val=eval(op+1,op+1);
 			switch(tokens[op].type)
 			{
 				case POINTER:return swaddr_read(val,4);
