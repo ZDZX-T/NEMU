@@ -193,7 +193,10 @@ uint32_t eval(int p,int q){
 			{
 				//printf("%s\t",regsl[i]);
 				if(strcmp(tokens[p].str,regsl[i])==0)
+				{
 					num=reg_l(i);
+					break;
+				}
 			}
 			if(i>=8 && strcmp(tokens[p].str,"eip")==0)
 				num=cpu.eip;
