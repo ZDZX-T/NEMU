@@ -200,7 +200,7 @@ uint32_t eval(int p,int q){
 			}
 			if(i>=8 && strcmp(tokens[p].str,"eip")==0)
 				num=cpu.eip;
-			else
+			else if(i>=8 && strcmp(tokens[p].str,"eip")!=0)
 			{
 				printf("error: the register should be 32 bits\n");
 				return 0;
