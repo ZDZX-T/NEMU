@@ -188,9 +188,10 @@ uint32_t eval(int p,int q){
 				tokens[p].str[i]=tokens[p].str[i+1];
 				i++;
 			}
+			printf("%s\n",tokens[p].str);
 			for(i=0;i<8;i++)
 			{
-				printf("%s\t",regsl[i]);
+				//printf("%s\t",regsl[i]);
 				if(strcmp(tokens[p].str,regsl[i])==0)
 					num=reg_l(i);
 			}
