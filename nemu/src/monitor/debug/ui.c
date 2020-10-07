@@ -114,6 +114,16 @@ static int cmd_x(char *args){
 	return 0;
 }
 
+static int cmd_p(char *args){
+	uint32_t result;
+	bool flag;
+	result=expr(args,&flag);
+	if(flag)
+		printf("result:\t0x%x(hex)\t%d(deg)\n",result,result);
+	else
+		printf("error: bad expression\n");
+	return 0;
+}
 
 static int cmd_help(char *args);
 
@@ -130,6 +140,7 @@ static struct {
 	{ "si","Pause after N steps, N is 1 when not set",cmd_si},
 	{"info","Print the status of the program, r for register, w for watchpoint",cmd_info},
 	{"x","Scan memory",cmd_x},
+	{"p","Expresison evaluation",cmd_p},
 };
 
 #define NR_CMD (sizeof(cmd_table) / sizeof(cmd_table[0]))

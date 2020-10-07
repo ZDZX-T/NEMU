@@ -12,27 +12,39 @@ enum {
 	/* TODO: Add more token types */
 	NUMBER,
 	HEX,
+	REG,
+	NEQ,
+	AND,
+	OR,
+	POINTER,
+	NEGATIVE,
 };
 
 static struct rule {
 	char *regex;
 	int token_type;
+	int priority;
 } rules[] = {
 
 	/* TODO: Add more rules.
 	 * Pay attention to the precedence level of different rules.
 	 */
 
-	{" +",	NOTYPE},				// spaces
-	{"\\+", '+'},					// plus
-	{"-",'-'},//	-
-	{"\\*",'*'},//	*
-	{"/",'/'},//	/
-	{"==", EQ},						// equal
-	{"\\b[0-9]+\\b",NUMBER},   //number, 123
-	{"\\b0[xX][0-9a-fA-F]+\\b",HEX},//number, 0xff
-	{"\\(",'('},// (
-	{"\\)",')'},// )
+	{" +",	NOTYPE,0},				// spaces
+	{"\\+", '+',11},					// plus
+	{"-",'-',11},//	-
+	{"\\*",'*',14},//	*
+	{"/",'/',14},//	/
+	{"==", EQ,8},						// equal
+	{"\\b[0-9]+\\b",NUMBER,0},   //number, 123
+	{"\\b0[xX][0-9a-fA-F]+\\b",HEX,0},//number, 0xff
+	{"\\(",'(',15},// (
+	{"\\)",')',15},// )
+	{"\\$[a-zA-Z]+",REG,0},//register
+	{"!=",NEQ,8},// not equal
+	{"!",'!',14},// not
+	{"&&",AND,4},// and
+	{"\\|\\|",OR,3},// or
 };
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]) )
@@ -59,6 +71,7 @@ void init_regex() {
 typedef struct token {
 	int type;
 	char str[32];
+	int priority;
 } Token;
 
 Token tokens[32];
@@ -87,7 +100,14 @@ static bool make_token(char *e) {
 				 */
 
 				switch(rules[i].token_type) {
-					default: panic("please implement me");
+					case NOTYPE:break;
+					default: 
+						tokens[nr_token].type=rules[i].token_type;
+						tokens[nr_token].priority=rules[i].priority;
+						strncpy(tokens[nr_token].str,substr_start,substr_len);
+						tokens[nr_token].str[substr_len]='\0';
+						nr_token++;
+						break;
 				}
 
 				break;
@@ -103,6 +123,133 @@ static bool make_token(char *e) {
 	return true; 
 }
 
+bool check_parentheses(int p,int q){
+	int i,l,r;
+	if(tokens[p].type=='(' && tokens[q].type==')')
+	{
+		l=0;
+		r=0;
+		for(i=p+1;i<q;i++)
+		{
+			if(tokens[i].type=='(')
+				l++;
+			else if(tokens[i].type==')')
+				r++;
+			if(r>l)
+				return false;
+		}
+		if(l==r)
+			return true;
+	}
+	return false;
+}
+
+int dominant_operator(int p,int q){
+	int i,op=0;
+	int min_priority=17;
+	for(i=p;i<=q;i++)
+	{
+		if(tokens[i].type==NUMBER || tokens[i].type==HEX || tokens[i].type==REG )
+			continue;
+		if(tokens[i].type=='(')
+			while(tokens[i].type!=')')
+				i++;
+		if(tokens[i].priority<=min_priority)
+		{
+			op=i;
+			min_priority=tokens[op].priority;
+		}
+	}
+	return op;
+}
+
+uint32_t eval(int p,int q){
+	if(p>q)
+	{
+		printf("unknown wrong?\n");
+		return 0;
+	}
+	else if(p==q)//should be a "number"
+	{
+		uint32_t num=0;
+		if(tokens[p].type==NUMBER)
+		{
+			sscanf(tokens[p].str,"%d",&num);
+		}
+		else if(tokens[p].type==HEX)
+		{
+			sscanf(tokens[p].str,"%x",&num);
+		}
+		else if(tokens[p].type==REG)
+		{
+			int i=0;
+			while(tokens[p].str[i]!='\0')//delete '$'
+			{
+				tokens[p].str[i]=tokens[p].str[i+1];
+				i++;
+			}
+			for(i=0;i<8;i++)
+			{
+				if(strcmp(tokens[p].str,regsl[i])==0)
+					num=reg_l(i);
+			}
+			if(i>=8 && strcmp(tokens[p].str,"eip")==0)
+				num=cpu.eip;
+			else
+			{
+				printf("error: the register should be 32 bits\n");
+				return 0;
+			}
+		}
+		return num;
+	}
+	else if(check_parentheses(p,q)==true)
+	{
+		return eval(p+1,q+1);
+	}
+	else
+	{
+		int op=dominant_operator(p,q);
+		if(tokens[op].type==POINTER || tokens[op].type==NEGATIVE ||tokens[op].type=='!')
+		{
+			uint32_t val=eval(p+1,p+1);
+			switch(tokens[op].type)
+			{
+				case POINTER:return swaddr_read(val,4);
+				case NEGATIVE:return -val;
+				case '!':return !val;
+				default:assert(0);
+			}
+		}
+		uint32_t val1=eval(p,op-1);
+		uint32_t val2=eval(op+1,q);
+		switch(tokens[op].type)
+		{
+			case '+':return val1+val2;
+			case '-':return val1-val2;
+			case '*':return val1*val2;
+			case '/':return val1/val2;
+			case EQ:return val1==val2;
+			case NEQ:return val1!=val2;
+			case AND:return val1&&val2;
+			case OR:return val1||val2;
+			default:assert(0);
+		}
+	}
+	
+}
+
+bool helpExplane(int type){//used in expr
+	switch (type)
+	{
+		case NUMBER: return false;
+		case HEX:return false;
+		case ')':return false;
+		case REG:return false;
+		default:return true;
+	}
+}
+
 uint32_t expr(char *e, bool *success) {
 	if(!make_token(e)) {
 		*success = false;
@@ -110,7 +257,22 @@ uint32_t expr(char *e, bool *success) {
 	}
 
 	/* TODO: Insert codes to evaluate the expression. */
-	panic("please implement me");
-	return 0;
+	*success = true;
+	//explane '*' as pointer
+	int i;
+	for(i=0;i<nr_token;i++)
+	{
+		if(tokens[i].type=='*' && (i==0 || helpExplane(tokens[i-1].type)))
+		{
+			tokens[i].type=POINTER;
+			tokens[i].priority=14;
+		}
+		else if(tokens[i].type=='-' && (i==0 || helpExplane(tokens[i-1].type)))
+		{
+			tokens[i].type=NEGATIVE;
+			tokens[i].priority=14;
+		}
+	}
+	return eval(0,nr_token-1);
 }
 
