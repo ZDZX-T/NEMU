@@ -50,7 +50,10 @@ void free_wp(WP *wp){
 	WP *left;
 	if(head==wp)
 	{
-		head=head->next;
+		if(head->next==NULL)
+			head=NULL;
+		else
+			head=head->next;
 		wp->next=free_;
 		free_=wp;
 		return;
