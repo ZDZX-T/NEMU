@@ -85,14 +85,15 @@ static int cmd_info(char *args){
 static int cmd_x(char *args){
 	int N;
 	int i,j;
+	bool flag;
 	swaddr_t targetMemory;
 	char *cmd=strtok(args," ");
 	sscanf(cmd,"%d",&N);
 	args=cmd+strlen(cmd)+1;
-	sscanf(args,"%x",&targetMemory);
-	if(targetMemory==0)
+	targetMemory=expr(args,&flag);
+	if(flag==false)
 	{
-		printf("bad address\n");
+		printf("bad expression\n");
 		return 0;
 	}
 	for(i=0;i<N;i++)
