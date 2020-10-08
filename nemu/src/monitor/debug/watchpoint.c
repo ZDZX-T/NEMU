@@ -99,9 +99,14 @@ bool checkWP(){
 void delWP(int NO){
 	WP *p;
 	p=head;
-	while(p->NO!=NO && p!=NULL)
-		p=p->next;
-	if(p==NULL)
+	while(p!=NULL)
+	{
+		if(p->NO==NO)
+			break;
+		else if(p->next!=NULL)
+			p=p->next;
+	}
+	if(p==NULL || p->next==NULL)
 	{
 		printf("error:watchpoint %d didn't exist\n",NO);
 		return;
