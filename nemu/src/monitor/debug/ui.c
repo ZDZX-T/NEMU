@@ -71,9 +71,9 @@ static int cmd_info(char *args){
 			printf("%s : 0x%08x\n",regsl[i],reg_l(i));
 		printf("eip : 0x%08x\n",cpu.eip);
 	}
-	else if(args[0]=='w')//didn't finish
+	else if(args[0]=='w')
 	{
-
+		info_w();
 	}
 	else
 	{
@@ -125,6 +125,35 @@ static int cmd_p(char *args){
 	return 0;
 }
 
+static int cmd_w(char *args){
+	WP *newWP=new_wp();
+	if(newWP==NULL)
+	{
+		printf("error:watchpoint pool is empty\n");
+		return 0;
+	}
+	bool flag;
+	strcpy(newWP->data,args);
+	newWP->val=expr(newWP->data,&flag);
+	if(flag)
+	{
+		printf("Set watchpoint--  NO:%d  %s  val:%x(hex) %d(deg)\n",newWP->NO,newWP->data,newWP->val,newWP->val);
+	}
+	else
+	{
+		printf("error:bad watchpoint information\n");
+		free_wp(newWP);
+	}
+	return 0;
+}
+
+static int cmd_d(char *args){
+	int NO;
+	sscanf(args,"%d",&NO);
+	delWP(NO);
+	return 0;
+}
+
 static int cmd_help(char *args);
 
 static struct {
@@ -141,6 +170,8 @@ static struct {
 	{"info","Print the status of the program, r for register, w for watchpoint",cmd_info},
 	{"x","Scan memory",cmd_x},
 	{"p","Expresison evaluation",cmd_p},
+	{"w","Set watchpoint",cmd_w},
+	{"d","Delete watchpoint",cmd_d},
 };
 
 #define NR_CMD (sizeof(cmd_table) / sizeof(cmd_table[0]))

@@ -98,7 +98,11 @@ static bool make_token(char *e) {
 				 * to record the token in the array `tokens'. For certain types
 				 * of tokens, some extra actions should be performed.
 				 */
-
+				if(nr_token>31)
+				{
+					printf("error: tokens more than 32\n");
+					return false;
+				}
 				switch(rules[i].token_type) {
 					case NOTYPE:break;
 					default: 
