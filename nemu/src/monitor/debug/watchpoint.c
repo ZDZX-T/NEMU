@@ -115,5 +115,6 @@ void delWP(int NO){
 		printf("error:watchpoint %d didn't exist\n",NO);
 		return;
 	}
+	printf("delete watchpoint: %d %s\n",p->NO,p->data);
 	free_wp(p);
 }
