@@ -70,6 +70,7 @@ void info_w(){
 	while(p!=NULL)
 	{
 		printf("%d\t%s\t0x%x(hex) %d(deg)\n",p->NO,p->data,p->val,p->val);
+		p=p->next;
 	}
 }
 
