@@ -192,7 +192,7 @@ uint32_t eval(int p,int q){
 				tokens[p].str[i]=tokens[p].str[i+1];
 				i++;
 			}
-			printf("%s\n",tokens[p].str);
+			//printf("%s\n",tokens[p].str);
 			for(i=0;i<8;i++)
 			{
 				//printf("%s\t",regsl[i]);
