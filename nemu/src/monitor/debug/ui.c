@@ -58,7 +58,7 @@ static int cmd_si(char *args){
 	}
 	else
 	{
-		printf("error:N < 1\n");
+		printf("error:illegal N\n");
 	}
 	return 0;
 }
