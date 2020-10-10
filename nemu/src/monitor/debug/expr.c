@@ -103,6 +103,11 @@ static bool make_token(char *e) {
 					printf("error: tokens more than 32\n");
 					return false;
 				}
+				if(substr_len>=31)
+				{
+					printf("error:a token's length is more than 31\n");
+					return false;
+				}
 				switch(rules[i].token_type) {
 					case NOTYPE:break;
 					default: 
