@@ -226,7 +226,8 @@ uint32_t eval(int p,int q){
 					break;
 				}
 			}
-			num=special_judgment(p);
+			if(i>=8)
+				num=special_judgment(p);
 			/*if(i>=8 && strcmp(tokens[p].str,"eip")==0)
 				num=cpu.eip;
 			else if(i>=8 && strcmp(tokens[p].str,"eip")!=0)
