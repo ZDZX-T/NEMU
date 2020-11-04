@@ -172,6 +172,15 @@ int dominant_operator(int p,int q){
 	return op;
 }
 
+uint32_t special_judgment(int p){
+	if(strcmp(tokens[p].str,"eip")==0)
+		return cpu.eip;
+	if(strcmp(tokens[p].str,"EFLAGS")==0)
+		return cpu.EFLAGS;
+	printf("error: unfind regester\n");
+	return 0;
+}
+
 uint32_t eval(int p,int q){
 	if(p>q)
 	{
@@ -206,14 +215,25 @@ uint32_t eval(int p,int q){
 					num=reg_l(i);
 					break;
 				}
+				else if(strcmp(tokens[p].str,regsw[i])==0)
+				{
+					num=reg_w(i);
+					break;
+				}
+				else if(strcmp(tokens[p].str,regsb[i])==0)
+				{
+					num=reg_b(i);
+					break;
+				}
 			}
-			if(i>=8 && strcmp(tokens[p].str,"eip")==0)
+			num=special_judgment(p);
+			/*if(i>=8 && strcmp(tokens[p].str,"eip")==0)
 				num=cpu.eip;
 			else if(i>=8 && strcmp(tokens[p].str,"eip")!=0)
 			{
 				printf("error: the register should be 32 bits\n");
 				return 0;
-			}
+			}*/
 		}
 		return num;
 	}
